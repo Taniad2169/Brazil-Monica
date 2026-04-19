@@ -1,273 +1,258 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WebSwan Games 🦢 | Daylight Memory</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Space+Mono:wght@400;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Swan Kids 🦢 | Smart Adventure</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy:   #0e6296;
-    --teal:   #1dc29e;
-    --gold:   #ffd700;
-    --white:  #ffffff;
+    --sun-yellow: #FFD700;
     --sky-blue: #87CEEB;
-    --coral:  #FF6B6B;
+    --grass-green: #2ECC71;
+    --navy: #0e6296;
+    --team-a: #FF6B6B;
+    --team-b: #4facfe;
+    --memory-blue: #9beafa;
   }
+
+  /* SMOOTH SCROLL ENABLED */
+  html { scroll-behavior: smooth; }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   body {
-    width: 100%;
-    min-height: 100vh;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg, var(--sky-blue) 0%, #E0F7FA 50%, #ffffff 100%);
-  }
-
-  .game-screen {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
+    background: linear-gradient(180deg, var(--sky-blue) 0%, #E0F7FA 100%);
     min-height: 100vh;
+    color: var(--navy);
+  }
+
+  .emoji-banner {
+    height: 100px;
+    background: white;
+    overflow: hidden;
+    position: relative;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 4px solid var(--sun-yellow);
   }
 
-  /* DAYLIGHT HEADER */
-  .memory-header { 
-    background: rgba(255, 255, 255, 0.9); 
-    padding: 15px; 
-    text-align: center; 
-    border-bottom: 3px solid var(--teal); 
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .memory-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--navy); }
-  .memory-title span { color: var(--teal); }
-  
-  .memory-stats { 
-    display: flex; 
-    justify-content: center; 
-    gap: 16px; 
-    padding: 10px; 
-    background: rgba(255, 255, 255, 0.6); 
-  }
-  .mem-stat { text-align: center; }
-  .mem-stat-label { font-size: 0.65rem; text-transform: uppercase; color: var(--navy); font-weight: 700; }
-  .mem-stat-val { font-family: 'Space Mono', monospace; font-size: 1.1rem; color: #333; font-weight: 700; }
-  
-  .mem-difficulty { display: flex; justify-content: center; gap: 8px; padding: 15px 10px; }
-  .diff-btn { padding: 8px 16px; border-radius: 30px; border: 2px solid var(--navy); background: transparent; color: var(--navy); font-size: 0.75rem; font-weight: 700; cursor: pointer; }
-  .diff-btn.active { background: var(--navy); color: var(--white); }
-  
-  .memory-grid-wrap { padding: 10px; }
-  .memory-grid { display: grid; gap: 8px; width: 100%; margin: auto; }
-  
-  .mem-card { aspect-ratio: 1; position: relative; cursor: pointer; transform-style: preserve-3d; transition: transform 0.45s; border-radius: 12px; }
-  .mem-card.flipped { transform: rotateY(180deg); }
-  .card-face { position: absolute; inset: 0; border-radius: 12px; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; }
-  
-  .card-back { background: #fff; border: 2px solid var(--navy); }
-  .card-back::before { content: '🦢'; font-size: 1.8rem; }
-  
-  .card-front { background: #fff; border: 2px solid var(--teal); transform: rotateY(180deg); }
-  .card-emoji { font-size: 2rem; }
-  .card-label { font-size: 0.6rem; font-weight: 700; color: var(--white); background: var(--navy); padding: 1px 6px; border-radius: 10px; }
-  
-  .memory-controls { display: flex; flex-direction: column; gap: 10px; padding: 20px; margin-top: auto; }
-  .control-row { display: flex; gap: 10px; width: 100%; }
-  .mem-ctrl-btn { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; background: var(--navy); color: white; font-size: 0.9rem; }
-
-  /* EXIT BUTTON */
-  .exit-game-btn { 
-    width: 100%; 
-    padding: 14px; 
-    border: none; 
-    border-radius: 12px; 
-    font-weight: 800; 
-    cursor: pointer; 
-    background: var(--coral); 
-    color: white; 
-    font-size: 1rem;
-    text-decoration: none;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+  .banner-emoji {
+    position: absolute;
+    font-size: 5rem;
+    opacity: 0;
+    transform: scale(0.1);
   }
 
-  /* WIN OVERLAY */
-  #memory-win { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
-  #memory-win.show { display: flex; }
-  .win-card { background: white; border: 4px solid var(--gold); border-radius: 24px; padding: 30px; text-align: center; width: 100%; max-width: 400px; }
-  .win-trophy { font-size: 4rem; display: block; }
-  .win-title { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--navy); }
-  .win-btn { background: var(--gold); color: var(--navy); border: none; padding: 12px 30px; border-radius: 30px; font-weight: 800; cursor: pointer; margin-top: 15px; }
-
-  /* CELEBRATION */
-  .confetti { position: fixed; width: 10px; height: 10px; pointer-events: none; z-index: 101; animation: fall 3s linear forwards; }
-  @keyframes fall {
-    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  @keyframes zoomInOut {
+    0% { transform: scale(0.1); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
   }
+
+  .nav-tabs { display: flex; background: white; border-bottom: 2px solid var(--sky-blue); }
+  .tab-btn { flex: 1; padding: 15px; border: none; font-weight: 800; cursor: pointer; background: white; color: var(--navy); }
+  .tab-btn.active { background: var(--navy); color: white; }
+
+  #start-screen {
+    position: fixed; inset: 0; background: white; z-index: 3000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+    overflow-y: auto;
+  }
+  .mode-btn {
+    width: 100%; max-width: 320px; padding: 18px; margin: 8px;
+    border: none; border-radius: 20px; font-weight: 800; font-size: 1.1rem;
+    cursor: pointer; background: var(--navy); color: white;
+    text-decoration: none; text-align: center;
+  }
+  
+  .memory-btn { background: var(--memory-blue); color: var(--navy); box-shadow: 0 4px 15px rgba(155, 234, 250, 0.4); }
+
+  .container { padding: 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+
+  .game-card { background: white; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+  .image-display { font-size: 80px; background: #f0faff; border-radius: 20px; margin-bottom: 20px; padding: 30px; min-height: 160px; display: flex; align-items: center; justify-content: center; }
+  .option-btn { width: 100%; padding: 18px; border: 2.5px solid var(--sky-blue); border-radius: 18px; background: white; font-weight: 800; font-size: 1.1rem; cursor: pointer; margin-bottom: 10px; }
+  .option-btn.correct { background: var(--grass-green); color: white; }
+  .option-btn.wrong { background: #FF6B6B; color: white; }
+
+  #score-screen { position: fixed; inset: 0; background: white; z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+  .confetti { position: fixed; width: 12px; height: 12px; pointer-events: none; z-index: 999; animation: fall 3s linear forwards; }
 </style>
 </head>
 <body>
 
-<div class="game-screen">
-  <div class="memory-header"><div class="memory-title">☀️ <span>WebSwan</span> Daylight</div></div>
-  <div class="memory-stats">
-    <div class="mem-stat"><div class="mem-stat-label">Moves</div><div class="mem-stat-val" id="mem-moves">0</div></div>
-    <div class="mem-stat"><div class="mem-stat-label">Pairs</div><div class="mem-stat-val" id="mem-pairs">0/10</div></div>
-    <div class="mem-stat"><div class="mem-stat-label">Time</div><div class="mem-stat-val" id="mem-timer">0s</div></div>
-  </div>
-  <div class="mem-difficulty">
-    <button class="diff-btn" onclick="setDifficulty('easy', this)">Easy</button>
-    <button class="diff-btn active" onclick="setDifficulty('medium', this)">Medium</button>
-    <button class="diff-btn" onclick="setDifficulty('hard', this)">Hard</button>
-  </div>
-  <div class="memory-grid-wrap"><div class="memory-grid" id="memory-grid"></div></div>
-  
-  <div class="memory-controls">
-    <div class="control-row">
-      <button class="mem-ctrl-btn" onclick="initMemoryGame()">🔄 Novo Jogo</button>
-      <button class="mem-ctrl-btn" onclick="showHint()">💡 Espiar</button>
-    </div>
-    <button class="exit-game-btn" onclick="window.history.back()">🚪 Sair do Jogo</button>
+<div id="start-screen">
+  <div style="font-size: 4rem; margin-bottom: 10px;">🦢</div>
+  <h1 style="font-family: 'Playfair Display', serif; margin-bottom: 25px;">Swan Kids Adventure</h1>
+  <button class="mode-btn" onclick="startGame(1)">1 Jogador</button>
+  <button class="mode-btn" onclick="startGame(2)">2 Jogadores</button>
+  <button class="mode-btn" onclick="startGame(4)">4 Jogadores</button>
+  <a href="https://taniad2169.github.io/Brazil-Monica/" class="mode-btn memory-btn">Jogar Jogo da Memória 🧩</a>
+</div>
+
+<div class="emoji-banner" id="banner">
+  <span class="banner-emoji">🦢</span>
+  <span class="banner-emoji">🚀</span>
+  <span class="banner-emoji">🍭</span>
+  <span class="banner-emoji">🎨</span>
+  <span class="banner-emoji">🏖️</span>
+  <span class="banner-emoji">⚽</span>
+</div>
+
+<div class="nav-tabs">
+  <button class="tab-btn active" id="tab-game" onclick="switchTab('game')">JOGAR</button>
+  <button class="tab-btn" id="tab-trans" onclick="switchTab('translator')">TRADUTOR</button>
+</div>
+
+<div class="container" id="game-section">
+  <div id="turn-display" style="padding: 10px; border-radius: 12px; text-align: center; font-weight: 800; margin-bottom: 15px; background: white; border: 2px solid var(--sky-blue);">Swan Kids</div>
+  <div class="game-card">
+    <div class="image-display" id="display-emoji">🎨</div>
+    <div id="question-pt" style="font-weight: 700; margin-bottom: 20px;"></div>
+    <div id="options-container"></div>
   </div>
 </div>
 
-<div id="memory-win">
-  <div class="win-card">
-    <span class="win-trophy">🏆</span>
-    <div class="win-title">Vitória!</div>
-    <div class="win-stats" id="win-stats" style="margin: 10px 0; color: var(--navy); font-weight: 600;"></div>
-    <button class="win-btn" onclick="initMemoryGame()">Jogar Novamente</button>
+<div class="container" id="translator-view" style="display:none;">
+  <div class="translator-card" style="background:white; border-radius:25px; padding:25px; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+    <p style="font-weight: 800; margin-bottom: 10px;">Tradutor Mágico</p>
+    <div style="display:flex; gap:10px; margin-bottom:20px;">
+      <button class="tab-btn active" style="border-radius:12px; border:2px solid var(--sky-blue);">Português 🇧🇷</button>
+      <button class="tab-btn" style="border-radius:12px; border:2px solid var(--sky-blue);">English 🇺🇸</button>
+    </div>
+    <textarea id="trans-input" placeholder="Digite aqui..." style="width:100%; height:100px; padding:15px; border-radius:15px; border:2px solid var(--sky-blue); font-size:1.1rem; margin-bottom:10px; resize:none;"></textarea>
+    <button class="action-btn" onclick="processMagic()" style="width:100%; padding:15px; background:var(--grass-green); color:white; border:none; border-radius:15px; font-weight:800; font-size:1.1rem;">🔊 Traduzir & Ouvir</button>
   </div>
 </div>
 
 <script>
-const memImages = [
-  {emoji:"🎷", label:"Sax"}, {emoji:"🎸", label:"Guitar"}, {emoji:"🎹", label:"Keys"}, {emoji:"🎺", label:"Trumpet"},
-  {emoji:"🎨", label:"Art"}, {emoji:"🎭", label:"Drama"}, {emoji:"🧶", label:"Knit"}, {emoji:"🧵", label:"Sew"},
-  {emoji:"🦢", label:"Swan"}, {emoji:"🎯", label:"Goal"}, {emoji:"💎", label:"Gem"}, {emoji:"🌊", label:"Ocean"}
-];
-
-let flippedCards = [];
-let matchedPairs = 0;
-let moves = 0;
-let timer = 0;
-let timerInterval;
-let difficulty = 'medium';
-
-function setDifficulty(lvl, btn) {
-  difficulty = lvl;
-  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  initMemoryGame();
-}
-
-function initMemoryGame() {
-  clearInterval(timerInterval);
-  timer = 0; moves = 0; matchedPairs = 0; flippedCards = [];
-  document.getElementById('mem-moves').innerText = '0';
-  document.getElementById('mem-pairs').innerText = `0/${getPairCount()}`;
-  document.getElementById('mem-timer').innerText = '0s';
-  document.getElementById('memory-win').classList.remove('show');
-  document.querySelectorAll('.confetti').forEach(el => el.remove());
-
-  const pairCount = getPairCount();
-  const gameCards = [...memImages.slice(0, pairCount), ...memImages.slice(0, pairCount)];
-  gameCards.sort(() => Math.random() - 0.5);
-
-  const grid = document.getElementById('memory-grid');
-  grid.innerHTML = '';
-  grid.style.gridTemplateColumns = difficulty === 'easy' ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)';
-
-  gameCards.forEach((item, index) => {
-    const card = document.createElement('div');
-    card.className = 'mem-card';
-    card.dataset.label = item.label;
-    card.innerHTML = `
-      <div class="card-face card-back"></div>
-      <div class="card-face card-front">
-        <div class="card-emoji">${item.emoji}</div>
-        <div class="card-label">${item.label}</div>
-      </div>
-    `;
-    card.onclick = () => flipCard(card);
-    grid.appendChild(card);
-  });
-
-  timerInterval = setInterval(() => {
-    timer++;
-    document.getElementById('mem-timer').innerText = timer + 's';
-  }, 1000);
-}
-
-function getPairCount() {
-  return difficulty === 'easy' ? 6 : difficulty === 'medium' ? 10 : 12;
-}
-
-function flipCard(card) {
-  if (flippedCards.length === 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;
-  card.classList.add('flipped');
-  flippedCards.push(card);
-  if (flippedCards.length === 2) {
-    moves++;
-    document.getElementById('mem-moves').innerText = moves;
-    checkMatch();
+  // Banner Animation
+  const emojis = document.querySelectorAll('.banner-emoji');
+  let emojiIndex = 0;
+  function runBanner() {
+    emojis.forEach(e => { e.style.animation = 'none'; e.style.opacity = '0'; });
+    const current = emojis[emojiIndex];
+    current.style.opacity = '1';
+    current.style.animation = 'zoomInOut 3s ease-in-out forwards';
+    emojiIndex = (emojiIndex + 1) % emojis.length;
+    setTimeout(runBanner, 3000);
   }
-}
+  runBanner();
 
-function checkMatch() {
-  const [c1, c2] = flippedCards;
-  if (c1.dataset.label === c2.dataset.label) {
-    c1.classList.add('matched');
-    c2.classList.add('matched');
-    matchedPairs++;
-    document.getElementById('mem-pairs').innerText = `${matchedPairs}/${getPairCount()}`;
-    flippedCards = [];
-    if (matchedPairs === getPairCount()) winGame();
-  } else {
-    setTimeout(() => {
-      c1.classList.remove('flipped');
-      c2.classList.remove('flipped');
-      flippedCards = [];
-    }, 1000);
+  // Game Logic
+  let gameMode = 1; let currentLevel = 0; let turnIndex = 0; let subTurnIndex = 0; let scores = [0, 0]; let canClick = true;
+  const questions = [
+    { emoji: "🟦", q: "Que cor é essa?", options: ["Blue", "Red", "Green"], correct: 0, color: "#0000FF" },
+    { emoji: "🏠", q: "O que é isso?", options: ["A house", "A car", "A bus"], correct: 0 },
+    { emoji: "🚗", q: "O que é isso?", options: ["A house", "A car", "A shoe"], correct: 1 },
+    { emoji: "🛏️", q: "Estou com sono...", options: ["I am hungry", "I am tired", "I am sleepy"], correct: 2 },
+    { emoji: "🏖️", q: "Vamos para a...", options: ["Mountain", "Beach", "Forest"], correct: 1 },
+    { emoji: "🚿", q: "O que é isso?", options: ["Shower", "Bath", "Bed"], correct: 0 },
+    { emoji: "🚌", q: "O que é isso?", options: ["A bus", "A car", "A plane"], correct: 0 },
+    { emoji: "👟", q: "O que é isso?", options: ["A foot", "A hand", "A shoe"], correct: 2 },
+    { emoji: "⛰️", q: "Como se diz montanha?", options: ["Mountain", "Beach", "River"], correct: 0 },
+    { emoji: "🌊", q: "Como se diz o oceano?", options: ["Ocean", "Lake", "Pool"], correct: 0 }
+  ];
+
+  function startGame(mode) {
+    gameMode = mode;
+    document.getElementById('start-screen').style.display = 'none';
+    loadLevel();
   }
-}
 
-function showHint() {
-  const cards = document.querySelectorAll('.mem-card:not(.flipped)');
-  cards.forEach(c => c.classList.add('flipped'));
-  setTimeout(() => {
-    cards.forEach(c => {
-      if (!c.classList.contains('matched')) c.classList.remove('flipped');
+  function switchTab(tab) {
+    const isGame = tab === 'game';
+    document.getElementById('game-section').style.display = isGame ? 'block' : 'none';
+    document.getElementById('translator-view').style.display = isGame ? 'none' : 'block';
+    document.getElementById('tab-game').classList.toggle('active', isGame);
+    document.getElementById('tab-trans').classList.toggle('active', !isGame);
+  }
+
+  function loadLevel() {
+    if (currentLevel >= 10) { showScore(); return; }
+    canClick = true; updateTurnDisplay();
+    const level = questions[currentLevel];
+    const display = document.getElementById('display-emoji');
+    display.innerText = level.emoji;
+    display.style.background = level.color || "#f0faff";
+    document.getElementById('question-pt').innerText = level.q;
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    level.options.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(idx, btn);
+      container.appendChild(btn);
     });
-  }, 1000);
-}
-
-function winGame() {
-  clearInterval(timerInterval);
-  document.getElementById('win-stats').innerText = `Tempo: ${timer}s | Cliques: ${moves}`;
-  document.getElementById('memory-win').classList.add('show');
-  startCelebration();
-}
-
-function startCelebration() {
-  const colors = ['#ffd700', '#1dc29e', '#ff6b6b', '#87CEEB', '#0e6296'];
-  for (let i = 0; i < 60; i++) {
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.style.left = Math.random() * 100 + 'vw';
-    c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    c.style.animationDelay = Math.random() * 2 + 's';
-    document.body.appendChild(c);
   }
-}
 
-initMemoryGame();
+  function updateTurnDisplay() {
+    const el = document.getElementById('turn-display');
+    if (gameMode === 1) el.innerText = `Questão ${currentLevel + 1}/10`;
+    else if (gameMode === 2) {
+      el.innerText = `Vez: Jogador ${turnIndex + 1}`;
+      el.style.color = turnIndex === 0 ? 'var(--team-a)' : 'var(--team-b)';
+    } else {
+      const pNum = turnIndex === 0 ? (subTurnIndex + 1) : (subTurnIndex + 3);
+      el.innerText = `Vez: Time ${turnIndex === 0 ? 'A' : 'B'} (P${pNum})`;
+      el.style.color = turnIndex === 0 ? 'var(--team-a)' : 'var(--team-b)';
+    }
+  }
+
+  function checkAnswer(idx, btn) {
+    if (!canClick) return;
+    canClick = false;
+    const correct = questions[currentLevel].correct;
+    if (idx === correct) {
+      btn.classList.add('correct');
+      scores[turnIndex]++;
+      speak(questions[currentLevel].options[correct], 'en-US');
+      startCelebration();
+      if (gameMode === 4) subTurnIndex = subTurnIndex === 0 ? 1 : 0;
+      setTimeout(() => { currentLevel++; loadLevel(); }, 2200);
+    } else {
+      btn.classList.add('wrong');
+      speak("No, try again!", 'en-US');
+      turnIndex = turnIndex === 0 ? 1 : 0;
+      subTurnIndex = 0;
+      setTimeout(() => { currentLevel++; loadLevel(); }, 1800);
+    }
+  }
+
+  function speak(text, lang) {
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = lang; msg.rate = 0.8;
+    window.speechSynthesis.speak(msg);
+  }
+
+  function startCelebration() {
+    for (let i = 0; i < 30; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.backgroundColor = ['#FFD700', '#2ECC71', '#FF6B6B', '#4facfe'][Math.floor(Math.random() * 4)];
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 3000);
+    }
+  }
+
+  function showScore() {
+    document.getElementById('game-section').style.display = 'none';
+    const screen = document.getElementById('score-screen');
+    screen.style.display = 'flex';
+    let winner = "";
+    if (gameMode === 1) winner = `Uau! ${scores[0]}/10`;
+    else if (scores[0] > scores[1]) winner = gameMode === 2 ? "P1 Venceu!" : "Time A Venceu!";
+    else if (scores[1] > scores[0]) winner = gameMode === 2 ? "P2 Venceu!" : "Time B Venceu!";
+    else winner = "Empate!";
+    document.getElementById('winner-text').innerText = winner;
+    document.getElementById('final-stats').innerText = gameMode > 1 ? `Placar: ${scores[0]} - ${scores[1]}` : "";
+  }
 </script>
 </body>
 </html>
