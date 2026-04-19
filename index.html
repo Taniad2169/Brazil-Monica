@@ -13,6 +13,7 @@
     --gold:   #ffd700;
     --white:  #ffffff;
     --sky-blue: #87CEEB;
+    --coral:  #FF6B6B;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -21,13 +22,12 @@
     width: 100%;
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg, #87CEEB 0%, #E0F7FA 50%, #ffffff 100%);
-    /* Removed overflow:hidden to allow scrolling */
+    background: linear-gradient(180deg, var(--sky-blue) 0%, #E0F7FA 50%, #ffffff 100%);
   }
 
   .game-screen {
     width: 100%;
-    max-width: 600px; /* Centers the game on larger screens */
+    max-width: 600px;
     margin: 0 auto;
     min-height: 100vh;
     display: flex;
@@ -76,8 +76,25 @@
   .card-emoji { font-size: 2rem; }
   .card-label { font-size: 0.6rem; font-weight: 700; color: var(--white); background: var(--navy); padding: 1px 6px; border-radius: 10px; }
   
-  .memory-controls { display: flex; gap: 10px; padding: 20px; margin-top: auto; }
+  .memory-controls { display: flex; flex-direction: column; gap: 10px; padding: 20px; margin-top: auto; }
+  .control-row { display: flex; gap: 10px; width: 100%; }
   .mem-ctrl-btn { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; background: var(--navy); color: white; font-size: 0.9rem; }
+
+  /* EXIT BUTTON */
+  .exit-game-btn { 
+    width: 100%; 
+    padding: 14px; 
+    border: none; 
+    border-radius: 12px; 
+    font-weight: 800; 
+    cursor: pointer; 
+    background: var(--coral); 
+    color: white; 
+    font-size: 1rem;
+    text-decoration: none;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+  }
 
   /* WIN OVERLAY */
   #memory-win { position: fixed; inset: 0; background: rgba(255,255,255,0.95); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
@@ -110,18 +127,22 @@
     <button class="diff-btn" onclick="setDifficulty('hard', this)">Hard</button>
   </div>
   <div class="memory-grid-wrap"><div class="memory-grid" id="memory-grid"></div></div>
+  
   <div class="memory-controls">
-    <button class="mem-ctrl-btn" onclick="initMemoryGame()">🔄 New Game</button>
-    <button class="mem-ctrl-btn" onclick="showHint()">💡 Peek</button>
+    <div class="control-row">
+      <button class="mem-ctrl-btn" onclick="initMemoryGame()">🔄 Novo Jogo</button>
+      <button class="mem-ctrl-btn" onclick="showHint()">💡 Espiar</button>
+    </div>
+    <button class="exit-game-btn" onclick="window.history.back()">🚪 Sair do Jogo</button>
   </div>
 </div>
 
 <div id="memory-win">
   <div class="win-card">
     <span class="win-trophy">🏆</span>
-    <div class="win-title">Victory!</div>
+    <div class="win-title">Vitória!</div>
     <div class="win-stats" id="win-stats" style="margin: 10px 0; color: var(--navy); font-weight: 600;"></div>
-    <button class="win-btn" onclick="initMemoryGame()">Play Again</button>
+    <button class="win-btn" onclick="initMemoryGame()">Jogar Novamente</button>
   </div>
 </div>
 
@@ -229,7 +250,7 @@ function showHint() {
 
 function winGame() {
   clearInterval(timerInterval);
-  document.getElementById('win-stats').innerText = `Time: ${timer}s | Moves: ${moves}`;
+  document.getElementById('win-stats').innerText = `Tempo: ${timer}s | Cliques: ${moves}`;
   document.getElementById('memory-win').classList.add('show');
   startCelebration();
 }
